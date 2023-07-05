@@ -118,7 +118,7 @@ if __name__ == '__main__':
     print('MCMC finished.')
 
     # acceptance fraction
-    print('\nAcceptance fraction:', np.mean(sampler.acceptance_fraction), end='\n')
+    print('\nAcceptance fraction:', np.mean(sampler.acceptance_fraction),'\n')
 
     # autocorrelation time
     print('\nAutocorrelation analysics:', sampler.get_autocorr_time(quiet=True))
@@ -141,33 +141,65 @@ if __name__ == '__main__':
     plt.show()
     
     # print final parameter values
-    print('\nFinal parameter values:')
-    print(sampler.flatchain[-1])
+    print('\nlast parameter values:')
+    print(sampler.flatchain[-1],'\n')
 
     # make corner plot
     fig = corner.corner(sampler.flatchain,
                         labels=params,
                         show_titles=True,
+                        range=param_range,
                         quantiles=[0.16, 0.5, 0.84],
-                        truths=truth_val,
                         title_kwargs={"fontsize": 12})
     
     plt.savefig('corner.png')
     plt.show()
 
+    # print the parameter values and errors
+    final_theta = []
+    error = []
+    for i in range(ndim):
+        mcmc = np.percentile(sampler.get_chain(flat = True)[:, i], [16, 50, 84])
+        q = np.diff(mcmc)
+        print(params[i], '--->',mcmc[1], '  err  ', -q[0],', ', q[1])
+        final_theta.append(mcmc[1])
+        error.append([q[0],q[1]])
+
     # make best fit graph
     fig = plt.figure(figsize=(15,5))
-    new_theta = sampler.get_chain(flat = True)[np.argmax(sampler.flatlnprobability)]
-    best_fit = param_interpol(new_theta[0], new_theta[1], new_theta[2], df_obs['wave'])
+    best_fit = param_interpol(final_theta[0], final_theta[1], final_theta[2], df_obs['wave'])
     plt.plot(df_obs['wave'], df_obs['flux'], label="Observation")
     plt.plot(df_obs['wave'], best_fit, label= "Best Fit")
     plt.legend()
+    plt.title('Best Fit')
     plt.savefig('best_fit.png')
     plt.show()
 
-    # save best fit data
-    best_model = pd.DataFrame()
-    best_model['wave'] = df_obs['wave']
-    best_model['flux'] = best_fit
-    best_model.to_pickle('best_fit.pkl')
+    # save best fit data to txt file
+    best_fit_df = pd.DataFrame({'wave':df_obs['wave'], 'flux':best_fit})
+    best_fit_df.to_csv('best_fit.txt', sep='\t', index=False)
 
+    # best fit with the error band
+    fig = plt.figure(figsize=(15,5))
+    best_fit = param_interpol(final_theta[0], final_theta[1], final_theta[2], df_obs['wave'])
+    lower_error = param_interpol(final_theta[0] - error[0][0], final_theta[1] - error[1][0], final_theta[2] - error[2][0], df_obs['wave'])
+    upper_error = param_interpol(final_theta[0] + error[0][1], final_theta[1] + error[1][1], final_theta[2] + error[2][1], df_obs['wave'])
+    
+    plt.fill_between(df_obs['wave'], lower_error, upper_error, alpha=0.5, label='Error Band')
+    plt.plot(df_obs['wave'], df_obs['flux'], label="Observation")
+    plt.plot(df_obs['wave'], best_fit, label= "Best Fit")
+
+    plt.legend()
+    plt.title('Best Fit with Error Band')
+    plt.savefig('best_fit_error.png')
+    plt.show()
+
+    # SNR error band and best fit
+    fig = plt.figure(figsize=(15,5))
+    error_best_fit = best_fit / SNR
+    plt.fill_between(df_obs['wave'], best_fit - error_best_fit, best_fit + error_best_fit, alpha=0.5, label='Error Band (SNR = 32)')
+    plt.plot(df_obs['wave'], best_fit, label= "Best Fit")
+    plt.legend()
+    plt.title('Best Fit with Error Band')
+    plt.savefig('best_fit_snr.png')
+    plt.show()

@@ -52,8 +52,6 @@ def param_interpol(teff_value, logg_value, m_value, x):
 
     wave = x
 
-    # ****************************************************
-
     min_wave = x.min()
     max_wave = x.max()
 
@@ -77,8 +75,6 @@ def param_interpol(teff_value, logg_value, m_value, x):
         # remove telluric regions
         for j in telluric_ranges:
             df_model = df_model[(df_model['wave'] < j[0]) | (df_model['wave'] > j[1])]
-
-        # ****************************************************
 
         # remove duplicate wavelengths
         df_model = df_model.drop_duplicates(subset='wave', keep='first')
