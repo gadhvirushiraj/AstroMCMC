@@ -8,54 +8,46 @@ from multiprocessing import Pool, cpu_count
 from norm_algo import norm_df
 from log_prob import ln_posterior, ln_likelihood
 from predict import param_interpol
+import argparse
 
 def get_inputs():
-    
-    obs_file_path = input('\nEnter the path to the observed spectrum: ')
 
-    params = input('\nEnter the parameter names: ').split()
-    ndim = len(params)
+    parser = argparse.ArgumentParser(description='Script to get input parameters.')
 
-    print('')
-    param_range = []
-    truth_val = []
-    for i in range(ndim):
-        param_range.append(list(map(float, input(f'Enter the range for parameter {params[i]}: ').split())))
-        truth_val.append(float(input(f'Enter the true value for parameter {params[i]}: ')))
-        print('')
+    parser.add_argument('--obs_file_path', type=str, help='Path to the observed spectrum')
+    parser.add_argument('--params', type=str, nargs='+', help='Parameter names')
+    parser.add_argument('--param_range', type=str, nargs='+', help='Parameter ranges')
+    parser.add_argument('--truth_val', type=float, nargs='+', help='True parameter values')
+    parser.add_argument('--nwalkers', type=int, help='Number of walkers')
+    parser.add_argument('--nsteps', type=int, help='Number of steps')
+    parser.add_argument('--wave_min', type=int, help='Minimum wavelength (open end)')
+    parser.add_argument('--wave_max', type=int, help='Maximum wavelength (open end)')
+    parser.add_argument('--is_grid', type=int, help='Use a model grid(0) or parameter interpolation(1)')
+    parser.add_argument('--choice', type=int, help='Initialization choice (1, 2, or 3)')
+    parser.add_argument('--spread', type=float, nargs='+', help='Spread around the initial parameters')
+    parser.add_argument('--initial_params', type=float, nargs='+', help='Initial parameters (only needed if choice 1 is selected)')
 
-    nwalkers = int(input('Enter the number of walkers: '))
-    nsteps = int(input('Enter the number of steps: '))
+    args = parser.parse_args()
+    param_range = [list(map(float, i.split())) for i in args.param_range[0].split(',')]
 
-    wave_min = int(input('\nEnter the minimum wavelength (open end): '))
-    wave_max = int(input('Enter the maximum wavelength (open end): '))
-
-    is_grid = int(input('\nDo you want to use a model grid(0) or parameter interpolation(1): '))
-
-    print('\nHow do you want to initialize the walkers?')
-    print('1. Self define initial parameters')
-    print('2. Uniformly distributed in the parameter space')
-    print('3. Use the MLE (takes time to find)')
-    choice = int(input('Enter your choice: '))
+    choice = args.choice
+    spread = args.spread
+    nwalkers = args.nwalkers
+    ndim = len(args.params)
 
     if choice == 1:
-        initial_params = list(map(float, input('\nEnter the initial parameters (seperated by space): ').split()))
-        spread = list(map(float, input('Enter the spread around the initial parameters (seperated by space): ').split()))
-        pos = initial_params + spread * np.random.randn(nwalkers, ndim)
+        pos = args.initial_params + spread * np.random.randn(nwalkers, ndim)
     elif choice == 2:
         param_range = np.array(param_range)
-        spread = list(map(float, input('\nEnter the spread around the initial parameters (seperated by space): ').split()))
         pos = np.random.uniform(low=param_range[:,0], high=param_range[:,1], size=(nwalkers, ndim))
     elif choice == 3:
-        spread = list(map(float, input('\nEnter the spread around the initial parameters (seperated by space): ').split()))
         pos = []
 
-    return params, param_range, ndim, nwalkers, nsteps, wave_min, wave_max, spread, pos, truth_val, is_grid, obs_file_path
+    return args.params, param_range, ndim, nwalkers, args.nsteps, args.wave_min, args.wave_max, pos, args.truth_val, args.is_grid, args.obs_file_path
 
 
 if __name__ == '__main__':
-
-    params, param_range, ndim, nwalkers, nsteps, wave_min, wave_max, spread, pos, truth_val, is_grid, obs_file_path = get_inputs()
+    params, param_range, ndim, nwalkers, nsteps, wave_min, wave_max, pos, truth_val, is_grid, obs_file_path = get_inputs()
 
     # read observed spectrum file
     df_obs = pd.read_table(obs_file_path, delim_whitespace=True, header=None)
