@@ -11,6 +11,8 @@ from predict import param_interpol
 
 def get_inputs():
     
+    obs_file_path = input('\nEnter the path to the observed spectrum: ')
+
     params = input('\nEnter the parameter names: ').split()
     ndim = len(params)
 
@@ -48,15 +50,14 @@ def get_inputs():
         spread = list(map(float, input('\nEnter the spread around the initial parameters (seperated by space): ').split()))
         pos = []
 
-    return params, param_range, ndim, nwalkers, nsteps, wave_min, wave_max, spread, pos, truth_val, is_grid
+    return params, param_range, ndim, nwalkers, nsteps, wave_min, wave_max, spread, pos, truth_val, is_grid, obs_file_path
 
 
 if __name__ == '__main__':
 
-    params, param_range, ndim, nwalkers, nsteps, wave_min, wave_max, spread, pos, truth_val, is_grid = get_inputs()
+    params, param_range, ndim, nwalkers, nsteps, wave_min, wave_max, spread, pos, truth_val, is_grid, obs_file_path = get_inputs()
 
-    # read observed spectrum 
-    obs_file_path = 'norm_RVcorr_LHS72.txt'
+    # read observed spectrum file
     df_obs = pd.read_table(obs_file_path, delim_whitespace=True, header=None)
     df_obs.columns = ['wave', 'flux']
 
