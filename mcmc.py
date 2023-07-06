@@ -92,14 +92,14 @@ if __name__ == '__main__':
     print('\nNumber of CPUs availble for multiprocessing:', ncpu)
 
     # warning message
-    print("\nWarning -> If you have a data file with the same name as the default name (data.h5) in the same directory, it will be overwritten.\nPlease move or delete the old data file.")
+    print("\nWarning -> If you have a data/result image files in the mcmc_data directory from previous MCMC run, it will be overwritten.\nPlease move or delete the old files.")
     if input("type 'run' when ready: ").strip() == 'run':
         pass
     else:
         exit()
 
     # Set up the backend
-    filename = "data.h5"
+    filename = "./mcmc_data/data.h5"
     backend = emcee.backends.HDFBackend(filename)
     backend.reset(nwalkers, ndim)
 
@@ -130,7 +130,7 @@ if __name__ == '__main__':
     for ax, label in zip(axes, params):
         ax.set_ylabel(label)
 
-    plt.savefig('trace_plot.png')
+    plt.savefig('./mcmc_data/trace_plot.png')
     plt.show()
     
     # print final parameter values
@@ -145,7 +145,7 @@ if __name__ == '__main__':
                         quantiles=[0.16, 0.5, 0.84],
                         title_kwargs={"fontsize": 12})
     
-    plt.savefig('corner.png')
+    plt.savefig('./mcmc_data/corner.png')
     plt.show()
 
     # print the parameter values and errors
@@ -165,26 +165,24 @@ if __name__ == '__main__':
     plt.plot(df_obs['wave'], best_fit, label= "Best Fit")
     plt.legend()
     plt.title('Best Fit')
-    plt.savefig('best_fit.png')
+    plt.savefig('./mcmc_data/best_fit.png')
     plt.show()
 
     # save best fit data to txt file
     best_fit_df = pd.DataFrame({'wave':df_obs['wave'], 'flux':best_fit})
-    best_fit_df.to_csv('best_fit.txt', sep='\t', index=False)
+    best_fit_df.to_csv('./mcmc_data/best_fit.txt', sep='\t', index=False)
 
     # best fit with the error band
     fig = plt.figure(figsize=(15,5))
     best_fit = param_interpol(final_theta[0], final_theta[1], final_theta[2], df_obs['wave'])
     lower_error = param_interpol(final_theta[0] - error[0][0], final_theta[1] - error[1][0], final_theta[2] - error[2][0], df_obs['wave'])
     upper_error = param_interpol(final_theta[0] + error[0][1], final_theta[1] + error[1][1], final_theta[2] + error[2][1], df_obs['wave'])
-    
     plt.fill_between(df_obs['wave'], lower_error, upper_error, alpha=0.5, label='Error Band')
     plt.plot(df_obs['wave'], df_obs['flux'], label="Observation")
     plt.plot(df_obs['wave'], best_fit, label= "Best Fit")
-
-    plt.legend()
     plt.title('Best Fit with Error Band')
-    plt.savefig('best_fit_error.png')
+    plt.legend()
+    plt.savefig('./mcmc_data/best_fit_error.png')
     plt.show()
 
     # SNR error band and best fit
@@ -192,7 +190,7 @@ if __name__ == '__main__':
     error_best_fit = best_fit / SNR
     plt.fill_between(df_obs['wave'], best_fit - error_best_fit, best_fit + error_best_fit, alpha=0.5, label='Error Band (SNR = 32)')
     plt.plot(df_obs['wave'], best_fit, label= "Best Fit")
+    plt.title('Best Fit with SNR Error Band')
     plt.legend()
-    plt.title('Best Fit with Error Band')
-    plt.savefig('best_fit_snr.png')
+    plt.savefig('./mcmc_data/best_fit_snr.png')
     plt.show()
