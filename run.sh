@@ -8,7 +8,7 @@ obs_file_path="/Users/rushirajgadhvi/Desktop/mcmc/norm_RVcorr_LHS72.txt"
 # Parameter Names
 params=("TEff" "LogG" "[M/H]]") 
 # Parameter Range
-param_range="3800 4200,4.0 5.5,-2.5 0.0"
+param_range="3800 4200, 4.0 5.5, -2.5 0.0"
 # True Parameter Values
 truth_val=(4000 4.5 -1)  
 
