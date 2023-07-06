@@ -1,14 +1,16 @@
+import os
 import emcee
 import corner
+import argparse
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 from scipy.optimize import minimize
 from multiprocessing import Pool, cpu_count
+
 from norm_algo import norm_df
-from log_prob import ln_posterior, ln_likelihood
 from predict import param_interpol
-import argparse
+from log_prob import ln_posterior, ln_likelihood
 
 def get_inputs():
 
@@ -48,6 +50,10 @@ def get_inputs():
 
 if __name__ == '__main__':
     params, param_range, ndim, nwalkers, nsteps, wave_min, wave_max, pos, truth_val, is_grid, obs_file_path = get_inputs()
+
+    newpath = os.path.join(os.getcwd(), 'mcmc_data')
+    if not os.path.exists(newpath):
+        os.makedirs(newpath)
 
     # read observed spectrum file
     df_obs = pd.read_table(obs_file_path, delim_whitespace=True, header=None)
