@@ -109,8 +109,6 @@ def param_interpol(teff_value, logg_value, m_value, x):
     # interpolating through grid 
     rgi = RegularGridInterpolator([teff_grid_val, logg_grid_val, m_grid_val, wave], flux4D, bounds_error=False, fill_value=None)
 
-    # print(teff_grid_val.shape, logg_grid_val.shape, m_grid_val.shape, wave.shape, flux4D.shape)
-    # print(flux4D)
     flux = []
     for i in range(len(x)):
         point = np.array([teff_value, logg_value, m_value, x[i]])

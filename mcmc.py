@@ -57,7 +57,10 @@ if __name__ == '__main__':
 
     # read observed spectrum file
     df_obs = pd.read_table(obs_file_path, delim_whitespace=True, header=None)
-    df_obs.columns = ['wave', 'flux']
+    if df_obs.shape[1] == 2:
+        df_obs.columns = ['wave', 'flux']
+    if df_obs.shape[1] == 3:
+        df_obs.columns = ['wave', 'flux', 'error']
 
     # trim the observed spectrum in range of interest
     df_obs = df_obs[(df_obs['wave'] > wave_min) & (df_obs['wave'] < wave_max)]
@@ -73,11 +76,15 @@ if __name__ == '__main__':
 
     # reset the index and normalize the flux
     df_obs = df_obs.reset_index(drop=True)
-    df_obs = norm_df(df_obs)
+    # df_obs = norm_df(df_obs)
 
-    # calculate the error
-    SNR = 32
-    error_eso = df_obs['flux'] / SNR
+    if df_obs.shape[1] == 2:
+        SNR = 32
+        error_eso = df_obs['flux'] / SNR
+        print('\nno error column found, taking default error SNR = 32')
+    if df_obs.shape[1] == 3:
+        error_eso = df_obs['error']
+        print('\nindepedent error column found')
 
     if len(pos) == 0:
         np.random.seed(42)

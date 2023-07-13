@@ -69,7 +69,6 @@ def param_grid(teff_value, logg_value, m_value, x):
 
     # remove duplicate wavelengths
     df_model = df_model.drop_duplicates(subset='wave', keep='first')
-
     df_model = df_model.reset_index(drop=True)
     
     # interpolate model to match observed wavelength grid
