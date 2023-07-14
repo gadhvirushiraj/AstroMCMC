@@ -4,8 +4,7 @@ import os
 from norm_algo import norm_df
 from scipy.ndimage import gaussian_filter1d
 
-
-dir = os.getcwd() + '/M_subdwarfs_models/'
+dir = '/Volumes/RUSHIRAJG/BT-Settl/'
 files = os.listdir(dir)
 
 dir2 = os.getcwd() + '/norm_models/'
@@ -14,11 +13,16 @@ sigma = 1.34
 
 for file in files:
 
+    if file.startswith('.'):
+        continue
+
+    print(file)
     flux = []
     wave = []
 
     f=open(dir + file,"r")
     lines=f.readlines()
+
     for line in lines:
         wave.append(line.split()[0])
         flux.append(line.split()[1])
@@ -38,6 +42,8 @@ for file in files:
 
     # remove duplicate wavelengths
     df_model = df_model.drop_duplicates(subset='wave', keep='first')
+    arg = np.argsort(df_model['wave'])
+    df_model = df_model.iloc[arg]
 
     # normalization
     df_model = norm_df(df_model) 
