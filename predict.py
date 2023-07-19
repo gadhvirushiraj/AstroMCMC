@@ -4,7 +4,7 @@ import numpy as np
 import os
 import re
 
-def param_interpol(teff_value, logg_value, m_value, x, remove_telluric=True):
+def param_interpol(teff_value, logg_value, m_value, x, use_telluric=True):
 
     # get file names in directory
     dir  =  os.getcwd() + '/norm_models/'
@@ -45,7 +45,7 @@ def param_interpol(teff_value, logg_value, m_value, x, remove_telluric=True):
     files = np.array(files)[idx]
 
     # define telluric regions
-    if remove_telluric:
+    if use_telluric:
         gaprange = [[8200,8390]]
         telluric_ranges = [[6860, 6960],[7550, 7750],[8200, 8430],[8930,9000]]
         telluric_ranges += gaprange
@@ -72,7 +72,7 @@ def param_interpol(teff_value, logg_value, m_value, x, remove_telluric=True):
         df_model = df_model[(df_model['wave'] >= min_wave_model) & (df_model['wave'] <= max_wave_model)]
 
         # remove telluric regions
-        if remove_telluric:
+        if use_telluric:
             for j in telluric_ranges:
                 df_model = df_model[(df_model['wave'] < j[0]) | (df_model['wave'] > j[1])]
 

@@ -13,13 +13,13 @@ def ln_prior(parameters, param_range):
     return 0.0
 
 
-def ln_likelihood(parameters, x, y, yerr, is_grid, remove_telluric):
+def ln_likelihood(parameters, x, y, yerr, is_grid, use_telluric):
 
     # Compute the model predictions
     if is_grid == 1:
-        model_flux = param_interpol(*parameters, x, remove_telluric= remove_telluric)
+        model_flux = param_interpol(*parameters, x, use_telluric= use_telluric)
     elif is_grid == 0:
-        model_flux = param_grid(*parameters, x, remove_telluric= remove_telluric)
+        model_flux = param_grid(*parameters, x, use_telluric= use_telluric)
 
     sigma2 = yerr**2 + model_flux**2
     ln_likelihood = -0.5 * np.sum((y - model_flux) ** 2 / sigma2)
@@ -27,7 +27,7 @@ def ln_likelihood(parameters, x, y, yerr, is_grid, remove_telluric):
     return ln_likelihood
 
 
-def ln_posterior(parameters, x, y, yerr, param_range, is_grid):
+def ln_posterior(parameters, x, y, yerr, param_range, is_grid, use_telluric):
     # Calculate the log prior
     ln_prior_val = ln_prior(parameters, param_range)
     
@@ -36,7 +36,7 @@ def ln_posterior(parameters, x, y, yerr, param_range, is_grid):
         return -np.inf
     
     # Calculate the log likelihood
-    ln_likelihood_val = ln_likelihood(parameters, x, y, yerr, is_grid)
+    ln_likelihood_val = ln_likelihood(parameters, x, y, yerr, is_grid, use_telluric)
     
     # Calculate the log posterior
     ln_posterior = ln_prior_val + ln_likelihood_val

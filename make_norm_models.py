@@ -4,22 +4,24 @@ import os
 from norm_algo import norm_df
 from scipy.ndimage import gaussian_filter1d
 
-# PARAMETERS
+# ****************** PARAMETERS
 sigma = 1.34
-min_range = 4000
+min_range = 3000
 max_range = 7000
 
-dir = '/Volumes/RUSHIRAJG/BT-Settl/'
+# ****************** DIRECTORIES
+dir = '/Volumes/RUSHIRAJG/BT-Settl/' # directory containing the models
 files = os.listdir(dir)
 
-dir2 = os.getcwd() + '/norm_models/'
+dir2 = os.getcwd() + '/norm_models/' # directory to save the normalized models (default in the current directory)
+
+# *****************************
 
 for file in files:
 
     if file.startswith('.'):
         continue
 
-    print(file)
     flux = []
     wave = []
 
@@ -45,11 +47,13 @@ for file in files:
 
     # remove duplicate wavelengths
     df_model = df_model.drop_duplicates(subset='wave', keep='first')
+
+    # sort the model spectrum
     arg = np.argsort(df_model['wave'])
     df_model = df_model.iloc[arg]
 
     # normalization
-    df_model = norm_df(df_model) 
+    df_model = norm_df(df_model, min_range, max_range) 
 
     # guassian smoothing
     df_model['flux'] = gaussian_filter1d(df_model['flux'], sigma)
