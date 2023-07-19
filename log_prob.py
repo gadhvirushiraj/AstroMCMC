@@ -5,7 +5,7 @@ import numpy as np
 def ln_prior(parameters, param_range):
     
     for i, param in enumerate(parameters):
-        if param_range[i][0] < param < param_range[i][1]:
+        if param_range[i][0] <= param <= param_range[i][1]:
             continue
         else:
             return -np.inf

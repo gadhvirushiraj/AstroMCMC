@@ -13,7 +13,7 @@ param_range="5100 6200, 4.5 5.5, -1.0 0.0"
 truth_val=(5800 5.0 -0.5)  
 
 # Number of walkers
-nwalkers=30
+nwalkers=6
 # Number of steps
 nsteps=400
 
@@ -31,7 +31,7 @@ is_grid=1
 choice=2
 
 # Spread around the initial parameters
-spread=(75 0.2 0.2)
+spread=(50 0.2 0.2)
 
 # Initial parameters (only needed if choice 1 is selected)  
 initial_params=(param1_initial param2_initial param3_initial)  

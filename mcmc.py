@@ -67,6 +67,9 @@ if __name__ == '__main__':
     arg_idx = np.argsort(df_obs['wave'])
     df_obs = df_obs.iloc[arg_idx]
 
+    # drop duplicate wavelengths
+    df_obs = df_obs.drop_duplicates(subset='wave', keep='first')
+
     # trim the observed spectrum in range of interest
     df_obs = df_obs[(df_obs['wave'] > wave_min) & (df_obs['wave'] < wave_max)]
 
