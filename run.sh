@@ -36,6 +36,9 @@ spread=(100 0.2 0.2)
 # Initial parameters (only needed if choice 1 is selected)  
 initial_params=(param1_initial param2_initial param3_initial)  
 
+# consider pre-mentioned telluric regions
+remove_telluric=1
+
 # Run the Python script with the specified arguments
 python3 "$python_script" \
   --obs_file_path "$obs_file_path" \
@@ -49,4 +52,5 @@ python3 "$python_script" \
   --is_grid "$is_grid" \
   --choice "$choice" \
   --spread "${spread[@]}" \
+  --remove_telluric "$remove_telluric" \
   # --initial_params "param1_initial" "param2_initial" "param3_initial"
