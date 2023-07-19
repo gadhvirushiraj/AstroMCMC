@@ -4,12 +4,15 @@ import os
 from norm_algo import norm_df
 from scipy.ndimage import gaussian_filter1d
 
+# PARAMETERS
+sigma = 1.34
+min_range = 4000
+max_range = 7000
+
 dir = '/Volumes/RUSHIRAJG/BT-Settl/'
 files = os.listdir(dir)
 
 dir2 = os.getcwd() + '/norm_models/'
-sigma = 1.34
-
 
 for file in files:
 

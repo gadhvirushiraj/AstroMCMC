@@ -27,6 +27,7 @@ def get_inputs():
     parser.add_argument('--is_grid', type=int, help='Use a model grid(0) or parameter interpolation(1)')
     parser.add_argument('--choice', type=int, help='Initialization choice (1, 2, or 3)')
     parser.add_argument('--spread', type=float, nargs='+', help='Spread around the initial parameters')
+    parser.add_argument('--remove_telluric', type=bool, help='Consider telluric regions (True or False)')
     parser.add_argument('--initial_params', type=float, nargs='+', help='Initial parameters (only needed if choice 1 is selected)')
 
     args = parser.parse_args()
@@ -45,11 +46,11 @@ def get_inputs():
     elif choice == 3:
         pos = []
 
-    return args.params, param_range, ndim, nwalkers, args.nsteps, args.wave_min, args.wave_max, pos, args.truth_val, args.is_grid, args.obs_file_path
+    return args.params, param_range, ndim, nwalkers, args.nsteps, args.wave_min, args.wave_max, pos, args.truth_val, args.is_grid, args.obs_file_path, args.remove_telluric
 
 
 if __name__ == '__main__':
-    params, param_range, ndim, nwalkers, nsteps, wave_min, wave_max, pos, truth_val, is_grid, obs_file_path = get_inputs()
+    params, param_range, ndim, nwalkers, nsteps, wave_min, wave_max, pos, truth_val, is_grid, obs_file_path, remove_telluric = get_inputs()
 
     newpath = os.path.join(os.getcwd(), 'mcmc_data')
     if not os.path.exists(newpath):
@@ -65,14 +66,18 @@ if __name__ == '__main__':
     # trim the observed spectrum in range of interest
     df_obs = df_obs[(df_obs['wave'] > wave_min) & (df_obs['wave'] < wave_max)]
 
-    # telluric regions
-    gaprange = [[8200,8390]]
-    telluric_ranges = [[6860, 6960],[7550, 7750],[8200, 8430],[8930,9000]]
-    telluric_ranges += gaprange
+    # define telluric regions
+    if remove_telluric:
+        print('\nTaking Telluric regions pre-mentioned in code.')
+        gaprange = [[8200,8390]]
+        telluric_ranges = [[6860, 6960],[7550, 7750],[8200, 8430],[8930,9000]]
+        telluric_ranges += gaprange
 
-    # trim the observed spectrum
-    for i in telluric_ranges:
-        df_obs = df_obs[(df_obs['wave'] < i[0]) | (df_obs['wave'] > i[1])]
+        # trim the observed spectrum
+        for i in telluric_ranges:
+            df_obs = df_obs[(df_obs['wave'] < i[0]) | (df_obs['wave'] > i[1])]
+    else:
+        print('\nNot considering Telluric regions.')
 
     # reset the index and normalize the flux
     df_obs = df_obs.reset_index(drop=True)
@@ -118,7 +123,7 @@ if __name__ == '__main__':
 
     print('\nRunning MCMC...')
     with Pool() as pool:
-        sampler = emcee.EnsembleSampler(nwalkers, ndim, ln_posterior, args=(df_obs['wave'], df_obs['flux'], error_eso, param_range, is_grid), pool=pool, backend=backend, moves=[(emcee.moves.DEMove(), 0.8),(emcee.moves.DESnookerMove(), 0.2),],)
+        sampler = emcee.EnsembleSampler(nwalkers, ndim, ln_posterior, args=(df_obs['wave'], df_obs['flux'], error_eso, param_range, is_grid, remove_telluric), pool=pool, backend=backend, moves=[(emcee.moves.DEMove(), 0.8),(emcee.moves.DESnookerMove(), 0.2),],)
         sampler.run_mcmc(pos, nsteps, progress=True, store=True)
 
     print('MCMC finished.')

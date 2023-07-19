@@ -3,24 +3,24 @@
 # Set the path to your Python script
 python_script="mcmc.py"
 # Path to the observed spectrum
-obs_file_path="/Users/rushirajgadhvi/Desktop/mcmc/norm_RVcorr_LHS72.txt"   
+obs_file_path="/Users/rushirajgadhvi/Desktop/mcmc/hd55575_SME_SPECTRUM.dat"   
 
 # Parameter Names
-params=("TEff" "LogG" "[M/H]]") 
+params=("Teff" "Logg" "[M/H]") 
 # Parameter Range
 param_range="3800 4200, 4.0 5.5, -2.5 0.0"
 # True Parameter Values
 truth_val=(4000 4.5 -1)  
 
 # Number of walkers
-nwalkers=20 
+nwalkers=6
 # Number of steps
-nsteps=100
+nsteps=10
 
 # Minimum wavelength (open end)
-wave_min=6500
+wave_min=5000
 # Maximum wavelength (open end) 
-wave_max=8900
+wave_max=6000
 
 # Use a model grid (0) or parameter interpolation (1)
 is_grid=0

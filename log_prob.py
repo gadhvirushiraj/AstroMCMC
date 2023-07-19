@@ -13,13 +13,13 @@ def ln_prior(parameters, param_range):
     return 0.0
 
 
-def ln_likelihood(parameters, x, y, yerr, is_grid):
+def ln_likelihood(parameters, x, y, yerr, is_grid, remove_telluric):
 
     # Compute the model predictions
     if is_grid == 1:
-        model_flux = param_interpol(*parameters, x)
+        model_flux = param_interpol(*parameters, x, remove_telluric= remove_telluric)
     elif is_grid == 0:
-        model_flux = param_grid(*parameters, x)
+        model_flux = param_grid(*parameters, x, remove_telluric= remove_telluric)
 
     sigma2 = yerr**2 + model_flux**2
     ln_likelihood = -0.5 * np.sum((y - model_flux) ** 2 / sigma2)

@@ -4,7 +4,7 @@ import numpy as np
 import os
 import re
 
-def param_interpol(teff_value, logg_value, m_value, x):
+def param_interpol(teff_value, logg_value, m_value, x, remove_telluric=True):
 
     # get file names in directory
     dir  =  os.getcwd() + '/norm_models/'
@@ -44,14 +44,13 @@ def param_interpol(teff_value, logg_value, m_value, x):
     # removing not needed file paths
     files = np.array(files)[idx]
 
-    # ****************************************************
-
-    gaprange = [[8200,8390]]
-    telluric_ranges = [[6860, 6960],[7550, 7750],[8200, 8430],[8930,9000]]
-    telluric_ranges += gaprange
+    # define telluric regions
+    if remove_telluric:
+        gaprange = [[8200,8390]]
+        telluric_ranges = [[6860, 6960],[7550, 7750],[8200, 8430],[8930,9000]]
+        telluric_ranges += gaprange
 
     wave = x
-
     min_wave = x.min()
     max_wave = x.max()
 
@@ -73,8 +72,9 @@ def param_interpol(teff_value, logg_value, m_value, x):
         df_model = df_model[(df_model['wave'] >= min_wave_model) & (df_model['wave'] <= max_wave_model)]
 
         # remove telluric regions
-        for j in telluric_ranges:
-            df_model = df_model[(df_model['wave'] < j[0]) | (df_model['wave'] > j[1])]
+        if remove_telluric:
+            for j in telluric_ranges:
+                df_model = df_model[(df_model['wave'] < j[0]) | (df_model['wave'] > j[1])]
 
         # remove duplicate wavelengths
         df_model = df_model.drop_duplicates(subset='wave', keep='first')

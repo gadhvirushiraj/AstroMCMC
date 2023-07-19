@@ -1,13 +1,9 @@
 import numpy as np
 from scipy.interpolate import UnivariateSpline
 
-def norm_df(df):
+def norm_df(df, min_range, max_range):
     df = df.iloc[:,[0,1]]
     df.columns = ['wave', 'flux']
-
-    # set a min and max range for the spectrum
-    min_range = 4000
-    max_range = 9100
 
     df = df[(df['wave'] > min_range) & (df['wave'] < max_range)]
     df.reset_index(inplace=True, drop=True)
