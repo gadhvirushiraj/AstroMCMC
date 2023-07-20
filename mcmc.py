@@ -211,11 +211,12 @@ if __name__ == '__main__':
     plt.show()
 
     # SNR error band and best fit
-    fig = plt.figure(figsize=(15,5))
-    error_best_fit = best_fit / SNR
-    plt.fill_between(df_obs['wave'], best_fit - error_best_fit, best_fit + error_best_fit, alpha=0.5, label='Error Band (SNR = 32)')
-    plt.plot(df_obs['wave'], best_fit, label= "Best Fit")
-    plt.title('Best Fit with SNR Error Band')
-    plt.legend()
-    plt.savefig('./mcmc_data/best_fit_snr.png')
-    plt.show()
+    if df_obs.shape[1] == 2:
+        fig = plt.figure(figsize=(15,5))
+        error_best_fit = best_fit / SNR
+        plt.fill_between(df_obs['wave'], best_fit - error_best_fit, best_fit + error_best_fit, alpha=0.5, label='Error Band (SNR = 32)')
+        plt.plot(df_obs['wave'], best_fit, label= "Best Fit")
+        plt.title('Best Fit with SNR Error Band')
+        plt.legend()
+        plt.savefig('./mcmc_data/best_fit_snr.png')
+        plt.show()
