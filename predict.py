@@ -32,7 +32,7 @@ def param_interpol(teff_value, logg_value, m_value, x, use_telluric=True):
         dist.append(np.sqrt((teff_value - teff[i])**2 + (logg_value - logg[i])**2 + (m_value - m[i])**2))
 
     # get the 'k' closest points
-    k = 10
+    k = 20
     dist = np.array(dist)
     idx = np.argsort(dist)[:k]
 

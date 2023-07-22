@@ -10,12 +10,12 @@ params=("Teff" "Logg" "[M/H]")
 # Parameter Range
 param_range="5100 6200, 4.5 5.5, -1.0 0.0"
 # True Parameter Values
-truth_val=(5800 5.0 -0.5)  
+truth_val=(5650 5.0 -0.5)  
 
 # Number of walkers
 nwalkers=30
 # Number of steps
-nsteps=400
+nsteps=200
 
 # Minimum wavelength (open end)
 wave_min=3900

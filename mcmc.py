@@ -185,7 +185,7 @@ if __name__ == '__main__':
 
     # make best fit graph
     fig = plt.figure(figsize=(15,5))
-    best_fit = param_interpol(final_theta[0], final_theta[1], final_theta[2], df_obs['wave'])
+    best_fit = param_interpol(final_theta[0], final_theta[1], final_theta[2], df_obs['wave'], use_telluric= use_telluric)
     plt.plot(df_obs['wave'], df_obs['flux'], label="Observation")
     plt.plot(df_obs['wave'], best_fit, label= "Best Fit")
     plt.legend()
@@ -199,7 +199,6 @@ if __name__ == '__main__':
 
     # best fit with the error band
     fig = plt.figure(figsize=(15,5))
-    best_fit = param_interpol(final_theta[0], final_theta[1], final_theta[2], df_obs['wave'])
     lower_error = param_interpol(final_theta[0] - error[0][0], final_theta[1] - error[1][0], final_theta[2] - error[2][0], df_obs['wave'])
     upper_error = param_interpol(final_theta[0] + error[0][1], final_theta[1] + error[1][1], final_theta[2] + error[2][1], df_obs['wave'])
     plt.fill_between(df_obs['wave'], lower_error, upper_error, alpha=0.5, label='Error Band')
